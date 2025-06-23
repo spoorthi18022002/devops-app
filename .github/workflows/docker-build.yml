@@ -1,0 +1,25 @@
+name: Docker CI/CD
+
+on:
+  push:
+    branches: [ "main" ]  # Trigger when pushing to main branch
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build Docker Image
+      run: docker build -t spoorthipbhat/devops-app:latest .
+
+    - name: Push Docker Image
+      run: docker push spoorthipbhat/devops-app:latest
