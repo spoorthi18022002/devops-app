@@ -1,0 +1,35 @@
+name: Docker CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Check Docker Secrets (debug)
+        run: |
+          if [ -z "${{ secrets.DOCKER_USERNAME }}" ]; then echo "❌ DOCKER_USERNAME not set"; exit 1; fi
+          if [ -z "${{ secrets.DOCKER_PASSWORD }}" ]; then echo "❌ DOCKER_PASSWORD not set"; exit 1; fi
+          echo "✅ Docker secrets are available"
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        run: docker build -t spoorthipbhat/devops-app:latest .
+
+      - name: Push Docker Image
+        run: docker push spoorthipbhat/devops-app:latest
+
