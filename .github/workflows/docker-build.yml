@@ -29,13 +29,17 @@ jobs:
         if: success()
         run: |
           curl -X POST -H 'Content-type: application/json' \
-          --data '{"text":"✅ CI/CD Success: Docker image pushed to Docker Hub!"}' \
-          "${{ secrets.SLACK_WEBHOOK_URL }}"
+          --data "{
+            \"text\": \"✅ *CI/CD SUCCESS*\n🧪 Job: Docker CI/CD\n🔗 Commit: https://github.com/${{ github.repository }}/commit/${{ github.sha }}\n🕒 Time: $(date -u)\"
+          }" \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
 
       # ❌ Failure Notification
       - name: Slack Notification (Failure)
         if: failure()
         run: |
           curl -X POST -H 'Content-type: application/json' \
-          --data '{"text":"❌ CI/CD Failed during Docker build/push!"}' \
-          "${{ secrets.SLACK_WEBHOOK_URL }}"
+          --data "{
+            \"text\": \"❌ *CI/CD FAILURE*\n🧪 Job: Docker CI/CD\n🔗 Commit: https://github.com/${{ github.repository }}/commit/${{ github.sha }}\n🕒 Time: $(date -u)\"
+          }" \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
