@@ -2,7 +2,7 @@ name: Docker CI/CD
 
 on:
   push:
-    branches: ["main"]  # Triggers on push to main branch
+    branches: ["main"]
 
 jobs:
   build-and-push:
@@ -24,8 +24,18 @@ jobs:
       - name: Push Docker Image
         run: docker push spoorthipbhat/devops-app:latest
 
-      - name: Send Slack Notification
+      # ✅ Success Notification
+      - name: Slack Notification (Success)
+        if: success()
         run: |
           curl -X POST -H 'Content-type: application/json' \
           --data '{"text":"✅ CI/CD Success: Docker image pushed to Docker Hub!"}' \
+          "${{ secrets.SLACK_WEBHOOK_URL }}"
+
+      # ❌ Failure Notification
+      - name: Slack Notification (Failure)
+        if: failure()
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data '{"text":"❌ CI/CD Failed during Docker build/push!"}' \
           "${{ secrets.SLACK_WEBHOOK_URL }}"
